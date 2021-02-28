@@ -1,0 +1,9 @@
+individuals:
+  number: 5
+  utility: quadratic # Can be linear or ln
+
+products:
+  red: 
+    preference_weight: 5
+  blue:
+    preference_weight: 8
