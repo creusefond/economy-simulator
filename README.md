@@ -8,7 +8,7 @@ This project is written in Python.
 # Assumptions
 
 Companies are created at the start of the simulation and no new company can arise.
-We use cardinal utility functions to model preferences (linear, ).
+We use cardinal utility functions to model preferences (log or quadratic).
 
 # How it works
 

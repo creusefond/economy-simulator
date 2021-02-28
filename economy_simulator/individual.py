@@ -2,19 +2,19 @@ import random
 import math
 
 class Individual():
-    preferences = None
+    utility_weights = None
     available_money = 0
 
     def __init__(self, products):
-        self.preferences = {}
-        sum_preferences = 0
+        self.utility_weights = {}
+        sum_utility_weights = 0
         for product_name, product_content in products.items():
-            product_weight = product_content["preference_weight"]
-            self.preferences[product_name] = random.random() * product_weight
-            sum_preferences += self.preferences[product_name]
+            product_weight = product_content["utility_weight"]
+            self.utility_weights[product_name] = random.random() * product_weight
+            sum_utility_weights += self.utility_weights[product_name]
 
-        for product_name, preference in self.preferences.items():
-            self.preferences[product_name] = preference / sum_preferences
+        for product_name, utility_weight in self.utility_weights.items():
+            self.utility_weights[product_name] = utility_weight / sum_utility_weights
 
     def utility(self, products_quantity, utility_function="linear"):
         utilities = {
@@ -23,9 +23,9 @@ class Individual():
             "quadratic": self._quadratic_utility
         }
         sum_utilities = 0
-        for product_name, preference in self.preferences.items():
+        for product_name, utility_weight in self.utility_weights.items():
             quantity = products_quantity.get(product_name, 0)
-            sum_utilities += preference * utilities[utility_function](quantity)
+            sum_utilities += utility_weight * utilities[utility_function](quantity)
         return sum_utilities
     
     def quantities_to_purchase(self, products_price):

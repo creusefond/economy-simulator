@@ -4,6 +4,6 @@ individuals:
 
 products:
   red: 
-    preference_weight: 5
+    utility_weight: 5
   blue:
-    preference_weight: 8
+    utility_weight: 8

@@ -1,4 +1,4 @@
-\title{Price derivation on fixed supply}
+\section{Price derivation on fixed supply}
 
 During the phase of the model where individuals buy products, the problem of the price arises.
 At what price are the goods exchanged ?
@@ -7,7 +7,10 @@ How are the products consequently shared between individuals ?
 To solve this step of the model, we use the following assumptions :
 \begin{enumerate}
     \item Each individual will spend his entire allowance to maximize his utility.
-    \item All the products will be purchased.
+    \item All the products available will be purchased.
+    \item Utility gained from a product is independant to the utility of other products.
+    \item Individuals can purchase fractions of a product.
+    \item Prices are global.
 \end{enumerate}
 
 The strategy exposed here is the following :
@@ -17,11 +20,105 @@ The strategy exposed here is the following :
     \item Determine the price of each product, and therefore the quantity actually purchased by each individual.
 \end{enumerate}
 
-\subtitle{Utility}
-Each individual $u\in U$ has a global utility function $utility(u, q_{u, A}, q_{u, B}, \dots)$ that depends on the quantities of each product that is owned by the individual.
-We assume that the global utility function of an user  is a linear combination of the utility
+\subsection{Utility}
 
-A standard assumption is to consider diminishing returns function : an individual benefits less and less of additional poducts.
-This 
+\subsubsection{Global utility}
+Each individual $u\in U$ has a global utility function $utility(u, q_{u, A}, q_{u, B}, \dots)$ that depends on the quantities $q_{u, p}$ of each product $p\in P$ that is owned by the individual.
+We assume that $utility$ is a linear combination of the utility of the multiple products :
+\begin{equation}
+    \label{eq:global_utility}
+    utility(u, q_{u, A}, q_{u, B}, \dots) = \sum_{p\in P} w_{u, p}\times utility_p(q_{u, p})
+\end{equation}
 
-\subtitle{Determination of quantities that each individual want to purchase}
+For the simulation purpose, we considered all utility weights $w_{u, p}$ to be derived from a model parameter at product-level.
+These parameters will allow the simulation to model different products with different global utilities.
+For each user, we draw a random number for each product that is weighted by the model parameter.
+Each utility weight $w_{u, p}$ correspond to this number, normalised so that :
+\begin{equation}
+    \label{eq:weight_normalisation}
+    \sum_{p\in P}w_{u, p} = 1
+\end{equation}
+
+\subsubsection{Product utility}
+We consider that each user has a utility function for each product.
+Right now, we assume that all product utility functions are the same, but we would like to move from this assumption in the future.
+
+We will only consider concave product utility functions.
+This is implied by the standard assumption of diminishing marginal utility : an individual benefits less and less of additional poducts.
+Note that it implies that the global utility is concave as well.
+
+The first product utility function is :
+\begin{equation}
+    utility\_ln(x) = ln(x + 1)
+\end{equation}
+
+Notes on this function :
+\begin{itemize}
+    \item it is strictly increasing on $[0; +\infty[$.
+    \item it is normalised so that $utility\_ln(0) = 0$ and we avoided the lack of definition of $ln$ on $0$
+\end{itemize}
+
+The second product utility function is :
+\begin{equation}
+    utility\_quadratic(x) = (a - x)^2 + a^2
+\end{equation}
+
+Notes on this function :
+\begin{itemize}
+    \item it has a global maximum on a constant quantity $a$
+    \item its derivative is linear, so it assumes a marginal utility that is constantly decreasing
+    \item it is normalised so that $utility\_quadratic(0) = 0$
+\end{itemize}
+
+To simplify, we will first present the reasonning and result using $utility\_ln$.
+Then, we will provide the same results using $utility\_quadratic$.
+
+\subsection{Determination of quantities that each individual want to purchase}
+
+Let's assume that each individual $u\in U$ has an amount $m_u$ of money available.
+Let's also assume that each product $p\in P$ is attributed a price $price_p$.
+How much of each item will the individual purchase in order to maximize his utility ?
+
+The problem can be stated as the minimisation problem of a convex function $f(q)$ where $q\in \mathbb{R}_{\ge0}^{|P|}$ are the quantities of the different products.
+This is the inverse of the global utility eq.\eqref{eq:global_utility} :
+\begin{equation*}
+    f(q) = (-1)\times \sum_{p\in P} w_{u, p}\times utility\_ln(q_{u, p})
+\end{equation*}
+
+% TODO : how to do with quadratic ? There will be times when they don't want to spend more. Need to implement financial products.
+And the problem statement is the following, using a constraint fonction $f_c(q)$ to represent the constraint that all the money need to be spent :
+\begin{equation}
+\begin{split}
+    min f(q) \\
+    f_c(q) = m_u - \sum_{p\in P}q_{u, p}\times price_p = 0
+\end{split}
+\end{equation}
+
+We use lagrangian multipliers to get a set of equations that we will use to find the minimum.
+\begin{equation*}
+\begin{cases}
+\nabla f(q) + \lambda \nabla f_c(q) & = (0, 0, \dots, 0) \\
+f_c(q) & = 0
+\end{cases}
+\end{equation*}
+
+\begin{equation*}
+\Leftrightarrow 
+\begin{cases}
+\forall p\in P, - w_{u,p}\times utility\_ln'(q_{u, p}) - \lambda \times price_p & = 0 \\
+m_u - \sum_{p\in P}q_{u, p}\times price_p & = 0
+\end{cases}
+\end{equation*}
+
+\begin{equation*}
+\Leftrightarrow 
+\begin{cases}
+\forall p\in P, \dfrac{w_{u,p}}{q_{u,p} + 1} + \lambda \times price_p = 0 \Leftrightarrow q_{u,p} = \dfrac{- w_{u, p}}{\lambda \times price_p} - 1 \\
+m_u - \sum_{p\in P}(- \dfrac{w_{u, p}}{\lambda \times price_p} - 1)\times price_p = 0 \Leftrightarrow \lambda = \dfrac{- \sum w_{u,p}}{m_u + \sum price_p}
+\end{cases}
+\end{equation*}
+
+Combining with eq.\eqref{eq:weight_normalisation}, we find the quantities that optimise the utility :
+\begin{equation}
+    \forall p\in P, q_{u,p} = \dfrac{(m_u + \sum price_p) \times w_{u, p}}{price_p} - 1
+\end{equation}
