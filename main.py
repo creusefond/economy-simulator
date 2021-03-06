@@ -5,8 +5,8 @@ import seaborn as sns
 
 
 
-# conf = OmegaConf.load('conf.yml')
-# print(conf)
+conf = OmegaConf.load('conf.yml')
+print(conf)
 
-# m = model.Model(conf)
-# m.run(10)
+m = model.Model(conf)
+m.run(10)

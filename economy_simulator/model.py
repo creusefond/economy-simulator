@@ -12,7 +12,7 @@ class Model:
         for _ in range(nb_individuals):
             self.individuals.append(ind.Individual(products))
     
-    def run(self, _interations):
+    def run(self, _iterations):
         # 1 Companies product produces
 
         # 2 Companies give the result of the production to the individuals
@@ -24,5 +24,5 @@ class Model:
             individual.give_money(10)
 
         for individual in self.individuals:
-            utility = individual.utility(quantities, self.conf['individuals']['utility'])
+            utility = individual.utility(quantities)
             print(utility)

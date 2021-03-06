@@ -1,6 +1,6 @@
 individuals:
   number: 5
-  utility: quadratic # Can be linear or ln
+  utility: ln # Can be ln
 
 products:
   red: 
